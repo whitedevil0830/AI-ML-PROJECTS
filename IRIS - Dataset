@@ -1,0 +1,132 @@
+import numpy as np,pandas as pd,seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
+import warnings
+warnings.filterwarnings('ignore')
+
+df = pd.read_csv("IRIS (1).csv")
+
+df.head(100)
+
+df.shape
+
+df.isnull().sum()
+
+df.dtypes
+
+df.describe(include='all')
+
+sns.barplot(x="species",y="sepal_length",data = df)
+
+sns.barplot(x="species",y="sepal_width",data = df)
+
+sns.barplot(x="species",y="petal_width",data = df)
+
+sns.barplot(x="species",y="petal_length",data = df)
+
+df.duplicated().sum()
+
+df[df.duplicated()]
+
+
+df.drop_duplicates(inplace=True)
+df.duplicated().sum()
+
+l=['sepal_length','sepal_width','petal_length','petal_width']
+for i in l:
+    sns.boxplot(y=df[i])
+    plt.show()
+
+def rem_out(c):
+    sorted(c)
+    q1,q3=c.quantile([0.25,0.75])
+    IQR=q3-q1
+    lr=q1-(1.5*IQR)
+    ur=q3+(1.5*IQR)
+    return lr,ur
+
+l,u=rem_out(df['sepal_width'])
+df['sepal_width']=np.where(df['sepal_width']>u,u,df['sepal_width'])
+df['sepal_width']=np.where(df['sepal_width']<l,l,df['sepal_width'])
+
+l=['sepal_length','sepal_width','petal_length','petal_width']
+for i in l:
+    sns.boxplot(y=df[i])
+    plt.show()
+
+feature = ["sepal_length","sepal_width","petal_length","petal_width"]
+X = df[feature]
+y = df['species']
+
+sns.pairplot(data=df,hue='species')
+
+sns.pairplot(data=df,y_vars='species',hue='species')
+
+df.groupby(by='species').mean()
+
+sns.heatmap(data=df.corr(),annot=True)
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 1)
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score,confusion_matrix,classification_report
+
+## Logistic Regression
+
+model_1 = LogisticRegression()
+model_1.fit(x_train,y_train)
+
+model_1.score(x_train,y_train)
+
+model_pred_1 = model_1.predict(x_test)
+accuracy_score(model_pred_1,y_test)
+
+## KNN
+
+model_2 = KNeighborsClassifier(n_neighbors=8)
+model_2.fit(x_train,y_train)
+
+model_2.score(x_train,y_train)
+
+model_pred_2 = model_2.predict(x_test)
+
+accuracy_score(model_pred_2,y_test)
+
+## SVC
+
+model_3 = SVC()
+model_3.fit(x_train,y_train)
+
+model_3.score(x_train,y_train)
+
+model_pred_3 = model_3.predict(x_test)
+accuracy_score(model_pred_3,y_test)
+
+## Decision Tree 
+
+model_4 = DecisionTreeClassifier(random_state=1,max_depth=2)
+model_4.fit(x_train,y_train)
+
+model_4.score(x_train,y_train)
+
+model_pred_4 = model_4.predict(x_test)
+accuracy_score(model_pred_4,y_test)
+
+sl = int(input("enter the values of 'sepal length': "))
+sw = int(input("enter the values of 'sepal width': "))
+pl = int(input("enter the values of 'petal length': "))
+pw = int(input("enter the values of 'petal width': "))
+inp = np.array([[sl,sw,pl,pw]])
+pred_1 = model_1.predict(inp)
+print("\nModel's Predictions: ")
+print("\nLogistic Regression Prediction: ",pred_1)
+pred_2 = model_2.predict(inp)
+print("KNN Prediction: ",pred_2)
+pred_3 = model_3.predict(inp)
+print("SVC Prediction: ",pred_3)
+pred_4 = model_4.predict(inp)
+print("Decsion Tree Prediction: ",pred_4)
